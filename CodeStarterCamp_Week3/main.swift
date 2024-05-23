@@ -85,7 +85,10 @@ class CoffeeShop {
 }
 
 enum Coffee: String {
-    case espresso, americano, caffeLatte, vanillaLatte
+    case espresso = "에스프레소"
+    case americano = "아메리카노"
+    case caffeLatte = "카페 라떼"
+    case vanillaLatte = "바닐라 라떼"
 }
 
 let misterLee = Person(name: "misterLee", job: "barista", money: 100_000)
