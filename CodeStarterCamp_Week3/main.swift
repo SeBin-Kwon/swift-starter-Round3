@@ -93,5 +93,3 @@ let missKim = Person(name: "missKim", job: "student", money: 10_000)
 let yagombucks = CoffeeShop(name: "yagombucks", sales: 500_000, barista: misterLee, menu: [.espresso: 4_000, .americano: 4_500, .caffeLatte: 5_000, .vanillaLatte: 5_500])
 
 missKim.orderCoffee(with: [.espresso, .caffeLatte], at: yagombucks, by: "missKim")
-
-
