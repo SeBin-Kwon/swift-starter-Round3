@@ -20,7 +20,7 @@ class Person {
         self.money = money
     }
     
-    func orderCoffee(with coffeeList: [Coffee], at coffeeShop: CoffeeShop) {
+    func orderCoffee(with coffeeList: [Coffee], at coffeeShop: CoffeeShop, by name: String) {
         var order = [Coffee]()
         for coffee in coffeeList {
             guard let price = coffeeShop.menu[coffee] else { return }
@@ -28,23 +28,25 @@ class Person {
                 money -= price
                 order.append(coffee)
             } else {
-                print("잔액이 부족합니다.")
+                print("잔액이 \(money - price)만큼 부족합니다.")
             }
         }
         if !order.isEmpty {
-            coffeeShop.takeOrder(coffeeList: order, orderer: self)
+            coffeeShop.takeOrder(coffeeList: order, orderer: name) { completedOrders in
+                receiveCoffee(order: completedOrders)
+            }
         } else {
             return
         }
     }
     
-    func receiveCoffee(order: [Coffee]) {
+    private func receiveCoffee(order: [Coffee]) {
         print("감사합니다~^^")
         coffeeOnHand = order
         drinkCoffee()
     }
     
-    func drinkCoffee() {
+    private func drinkCoffee() {
         print("홀짝")
         coffeeOnHand.removeAll()
     }
@@ -64,20 +66,20 @@ class CoffeeShop {
         self.menu = menu
     }
     
-    func takeOrder(coffeeList: [Coffee], orderer: Person) {
+    func takeOrder(coffeeList: [Coffee], orderer: String, completionHandler: ([Coffee]) -> Void) {
         for coffee in coffeeList {
             if let price = menu[coffee] {
                 sales += price
             }
             pickUpTable.append(coffee)
         }
-        makeCoffee(for: orderer)
+        makeCoffee(orderer: orderer, completionHandler: completionHandler)
     }
     
-    func makeCoffee(for orderer: Person) {
-        let completedOrders = pickUpTable.map { String($0.rawValue) }.joined(separator: ", ")
-        print("주문하신 \(completedOrders) 나왔습니다~")
-        orderer.receiveCoffee(order: pickUpTable)
+    private func makeCoffee(orderer: String, completionHandler: ([Coffee]) -> Void) {
+        let completedOrders = pickUpTable.map { $0.rawValue }.joined(separator: ", ")
+        print("\(orderer) 님이 주문하신 \(completedOrders)(이/가) 준비되었습니다. 픽업대에서 가져가주세요.")
+        completionHandler(pickUpTable)
         pickUpTable.removeAll()
     }
 }
@@ -90,6 +92,6 @@ let misterLee = Person(name: "misterLee", job: "barista", money: 100_000)
 let missKim = Person(name: "missKim", job: "student", money: 10_000)
 let yagombucks = CoffeeShop(name: "yagombucks", sales: 500_000, barista: misterLee, menu: [.espresso: 4_000, .americano: 4_500, .caffeLatte: 5_000, .vanillaLatte: 5_500])
 
-missKim.orderCoffee(with: [.espresso, .caffeLatte], at: yagombucks)
+missKim.orderCoffee(with: [.espresso, .caffeLatte], at: yagombucks, by: "missKim")
 
 
